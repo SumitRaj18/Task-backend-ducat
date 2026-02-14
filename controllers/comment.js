@@ -6,22 +6,23 @@ const AddComment = async (req, res) => {
     }
 
     try {
-        const blog = req.params.id; // Correctly getting ID from URL
+        const blog = req.params.id;
         const { comment } = req.body;
-        const user = req.user._id;
+        
+        // Use a fallback to ensure we grab the ID correctly
+        const userId = req.user._id || req.user.id; 
+
+        if (!userId) {
+            return res.status(400).json({ success: false, msg: "User ID not found in request" });
+        }
 
         const result = await Comments.create({
             comment,
-            commentedBy: user,
+            commentedBy: userId, // Ensure this matches the Schema field name
             blog
         });
 
-        // Use .json() for better frontend compatibility
-        return res.status(201).json({ 
-            success: true, 
-            msg: "Comment Added", 
-            result 
-        });
+        return res.status(201).json({ success: true, result });
     } catch (error) {
         return res.status(500).json({ success: false, msg: error.message });
     }
