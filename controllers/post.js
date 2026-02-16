@@ -1,39 +1,24 @@
 import { Post } from "../models/post.js";
 
-export const createPost = async (req, res) => {
+exports.createPost = async (req, res) => {
     try {
-        const { title, description } = req.body;
+        const { title, content } = req.body;
+        
+        // Check if file exists
+        const imagePath = req.file ? req.file.filename : null;
 
-        const userId = req.user?._id || req.user?.id; 
-
-        if (!userId) {
-            return res.status(401).json({
-                success: false,
-                msg: "Unauthorized: User ID not found in request"
-            });
-        }
-
-        const post = await Post.create({
+        const newPost = await Post.create({
             title,
-            description,
-            createdBy: userId, // ✅ This satisfies the Mongoose requirement
-            image: req.file ? req.file.path : null // If you're handling the image upload here
+            content,
+            image: imagePath, // Save the filename to your DB
+            createdBy: req.user._id // Provided by your auth middleware
         });
 
-        return res.status(201).json({
-            success: true,
-            msg: "Post Created Successfully",
-            post // It's good practice to return the created post
-        });
-
+        res.status(201).json(newPost);
     } catch (error) {
-        // 3. Catch validation or server errors
-        return res.status(500).json({
-            success: false,
-            msg: error.message || "Internal Server Error"
-        });
+        res.status(500).json({ error: error.message });
     }
-}
+};
 export const AllPosts= async (req,res) => {
     const posts = await Post.find({});
     if (!posts) {
