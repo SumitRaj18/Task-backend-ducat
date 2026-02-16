@@ -2,21 +2,22 @@ import { Post } from "../models/post.js";
 
 export const createPost = async (req, res) => {
     try {
-        const { title, content } = req.body;
+        // Change 'content' to 'description' here
+        const { title, description } = req.body; 
         
-        // Check if file exists
         const imagePath = req.file ? req.file.filename : null;
 
         const newPost = await Post.create({
             title,
-            content,
-            image: imagePath, // Save the filename to your DB
-            createdBy: req.user._id // Provided by your auth middleware
+            description, // Ensure this matches your Mongoose Schema field name
+            image: imagePath,
+            createdBy: req.user._id 
         });
 
         res.status(201).json(newPost);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        // This will now catch the validation error properly if things go wrong
+        res.status(400).json({ error: error.message });
     }
 };
 export const AllPosts= async (req,res) => {

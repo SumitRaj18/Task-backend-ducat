@@ -17,7 +17,6 @@ const PostSchema = new mongoose.Schema({
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "users",
-        required: true // Good practice to ensure every post has an owner
     }
 }, {
     timestamps: true
