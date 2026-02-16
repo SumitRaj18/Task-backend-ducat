@@ -1,6 +1,6 @@
 import { Post } from "../models/post.js";
 
-exports.createPost = async (req, res) => {
+export const createPost = async (req, res) => {
     try {
         const { title, content } = req.body;
         
